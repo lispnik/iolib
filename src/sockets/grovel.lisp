@@ -205,6 +205,10 @@
 ;; IP options
 (constant (ip-hdrincl "IP_HDRINCL"))
 (constant (ip-recverr "IP_RECVERR") :optional t)
+(constant (ip-multicast-all "IP_MULTICAST_ALL"))
+(constant (ip-multicast-if "IP_MULTICAST_IF"))
+(constant (ip-multicast-loop "IP_MULTICAST_LOOP"))
+(constant (ip-multicast-ttl "IP_MULTICAST_TTL"))
 
 #+linux
 (progn

@@ -275,6 +275,33 @@
 
 (define-socket-option ip-receive-error :get-and-set
   ip-recverr ipproto-ip :bool :linux)
+
+;;; Multicast
+
+(define-socket-option ip-multicast-loop :get-and-set
+  ip-multicast-loop ipproto-ip :bool :any)
+
+(define-socket-option ip-multicast-ttl :get-and-set
+  ip-multicast-ttl ipproto-ip :int :any)
+
+(define-socket-option ip-multicast-if :get-and-set
+  ip-multicast-if ipproto-ip :in-addr :any)
+
+(define-socket-option-type :in-addr (address))
+
+(define-socket-option-helper (:set :in-addr) (fd level option address)
+  (with-foreign-object (optval 'in-addr-struct)
+    (with-foreign-slots ((addr) optval in-addr-struct)
+      (setf addr (htonl (vector-to-integer (address-to-vector address))))
+      (%setsockopt fd level option optval (isys:sizeof 'in-addr-struct))
+      (values address))))
+
+(define-socket-option-helper (:get :in-addr) (fd level option)
+  (with-foreign-object (optval 'in-addr-struct)
+    (with-socklen (optlen (isys:sizeof 'in-addr-struct))
+      (%getsockopt fd level option optval optlen)
+      (with-foreign-slots ((addr) optval in-addr-struct)
+        (values addr)))))
 
 
 ;;; RAW  Options
