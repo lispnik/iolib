@@ -294,14 +294,30 @@
     (with-foreign-slots ((addr) optval in-addr-struct)
       (setf addr (htonl (vector-to-integer (address-to-vector address))))
       (%setsockopt fd level option optval (isys:sizeof 'in-addr-struct))
-      (values address))))
+      address)))
 
 (define-socket-option-helper (:get :in-addr) (fd level option)
   (with-foreign-object (optval 'in-addr-struct)
     (with-socklen (optlen (isys:sizeof 'in-addr-struct))
       (%getsockopt fd level option optval optlen)
       (with-foreign-slots ((addr) optval in-addr-struct)
-        (values addr)))))
+        addr))))
+
+(define-socket-option ip-add-membership :set
+  ip-add-membership ipproto-ip :ip-mreq :any)
+
+(define-socket-option-type :ip-mreq (multicast-address interface-address))
+
+(define-socket-option-helper (:set :ip-mreq) (fd level option multicast-address interface-address)
+  (with-foreign-object (optval 'ip-mreq)
+    (with-foreign-slots ((multiaddr interface) optval ip-mreq)
+      (with-foreign-slots ((addr) multiaddr in-addr-struct)
+        (setf addr (htonl (vector-to-integer (address-to-vector multicast-address)))))
+      (with-foreign-slots ((addr) interface in-addr-struct)
+        (setf addr (htonl (vector-to-integer (address-to-vector interface-address))))))
+    (%setsockopt fd level option optval (isys:sizeof 'ip-mreq))
+    (values multicast-address interface-address)))
+
 
 
 ;;; RAW  Options

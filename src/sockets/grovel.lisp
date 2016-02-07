@@ -209,6 +209,8 @@
 (constant (ip-multicast-if "IP_MULTICAST_IF"))
 (constant (ip-multicast-loop "IP_MULTICAST_LOOP"))
 (constant (ip-multicast-ttl "IP_MULTICAST_TTL"))
+(constant (ip-add-membership "IP_ADD_MEMBERSHIP"))
+(constant (ip-drop-membership "IP_DROP_MEMBERSHIP"))
 
 #+linux
 (progn
@@ -419,6 +421,10 @@
 (constant (ipv6-multicast-loop "IPV6_MULTICAST_LOOP"))
 (constant (ipv6-unicast-hops "IPV6_UNICAST_HOPS"))
 (constant (ipv6-v6only "IPV6_V6ONLY"))
+
+(cstruct ip-mreq "struct ip_mreq"
+  (multiaddr "imr_multiaddr" :type in-addr-struct)
+  (interface "imr_interface" :type in-addr-struct))
 
 ;;;; from netinet/tcp.h
 
